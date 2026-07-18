@@ -8,6 +8,8 @@ export async function GET(request: Request) {
 
   if (code) {
     const cookieStore = await cookies();
+    const cookieList: any[] = [];
+    
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -17,19 +19,20 @@ export async function GET(request: Request) {
             return cookieStore.getAll();
           },
           setAll(cookiesToSet) {
-            try {
-              cookiesToSet.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options)
-              );
-            } catch {
-              // Ignored when called from Server Components
-            }
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieList.push({ name, value, options });
+              try {
+                cookieStore.set(name, value, options);
+              } catch {
+                // Ignore if cookieStore.set is read-only in this context
+              }
+            });
           },
         },
       }
     );
 
-    // Exchange the verification code for an active user session (sets cookies)
+    // Exchange the verification code for an active user session (sets cookies in cookieList)
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
     
     if (!error && data?.user) {
@@ -48,13 +51,21 @@ export async function GET(request: Request) {
       const forwardedHost = request.headers.get('x-forwarded-host');
       const isLocalEnv = process.env.NODE_ENV === 'development';
       
-      if (isLocalEnv) {
-        return NextResponse.redirect(`${origin}${targetPath}`);
-      } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${targetPath}`);
-      } else {
-        return NextResponse.redirect(`${origin}${targetPath}`);
+      let redirectUrl = `${origin}${targetPath}`;
+      if (!isLocalEnv && forwardedHost) {
+        redirectUrl = `https://${forwardedHost}${targetPath}`;
       }
+
+      const response = NextResponse.redirect(redirectUrl);
+      
+      // EXPLICIT FIX: Manually copy the auth cookies to the redirect response
+      cookieList.forEach(({ name, value, options }) => {
+        response.cookies.set(name, value, options);
+      });
+
+      return response;
+    } else if (error) {
+      console.error('Code exchange failed:', error.message);
     }
   }
 
