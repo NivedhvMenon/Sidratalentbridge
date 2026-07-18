@@ -70,7 +70,7 @@ export async function sendLoginOTP(formData: {
       options: {
         shouldCreateUser: false, // Do not create user if not exists during login
         data: { role },
-        emailRedirectTo: `${origin}`,
+        emailRedirectTo: `${origin}/auth/callback`,
       },
     });
 
@@ -131,7 +131,7 @@ export async function sendSignupOTP(
       options: {
         shouldCreateUser: true, // Must create user if signup
         data: metadata,
-        emailRedirectTo: `${origin}`,
+        emailRedirectTo: `${origin}/auth/callback`,
       },
     });
 
