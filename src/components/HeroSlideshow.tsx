@@ -28,7 +28,7 @@ export default function HeroSlideshow() {
           <div
             key={src}
             className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-              isActive ? 'opacity-70' : 'opacity-0'
+              isActive ? 'opacity-90' : 'opacity-0'
             }`}
           >
             <Image
