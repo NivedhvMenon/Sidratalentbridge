@@ -9,9 +9,6 @@ values (
 )
 on conflict (id) do nothing;
 
--- Ensure RLS is active on storage objects
-alter table storage.objects enable row level security;
-
 -- Storage Policies for Resumes
 
 -- 1. Candidates can upload their own resumes
