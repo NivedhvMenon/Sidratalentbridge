@@ -36,7 +36,52 @@ export async function GET(request: Request) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
     
     if (!error && data?.user) {
-      const role = data.user.user_metadata?.role;
+      let role = data.user.user_metadata?.role;
+      
+      // SELF-HEALING: If role is missing from auth user_metadata, query database tables
+      if (!role) {
+        const userId = data.user.id;
+        
+        // 1. Check admin_users table
+        const { data: adminRow } = await supabase
+          .from('admin_users')
+          .select('role')
+          .eq('id', userId)
+          .single();
+          
+        if (adminRow?.role === 'admin') {
+          role = 'admin';
+        } else {
+          // 2. Check candidates table
+          const { data: candidateRow } = await supabase
+            .from('candidates')
+            .select('id')
+            .eq('id', userId)
+            .single();
+            
+          if (candidateRow) {
+            role = 'candidate';
+          } else {
+            // 3. Check employers table
+            const { data: employerRow } = await supabase
+              .from('employers')
+              .select('id')
+              .eq('id', userId)
+              .single();
+              
+            if (employerRow) {
+              role = 'employer';
+            }
+          }
+        }
+        
+        // Save the resolved role back to user metadata so it's cached for future requests
+        if (role) {
+          await supabase.auth.updateUser({
+            data: { role }
+          });
+        }
+      }
       
       // Determine the dashboard destination based on user role
       let targetPath = '/';
