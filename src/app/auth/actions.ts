@@ -3,6 +3,8 @@
 import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 
+import { headers } from 'next/headers';
+
 // Helper to check if email already exists in any table using a secure RPC database function
 async function checkEmailExists(email: string) {
   const supabase = await createClient();
@@ -56,12 +58,19 @@ export async function sendLoginOTP(formData: {
       return { error: 'Access denied. You are not registered as an administrator.' };
     }
 
+    // Dynamically get origin from request headers to redirect back to local or production site
+    const headersList = await headers();
+    const host = headersList.get('host');
+    const proto = headersList.get('x-forwarded-proto') || 'http';
+    const origin = `${proto}://${host}`;
+
     // Send OTP
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
         shouldCreateUser: false, // Do not create user if not exists during login
         data: { role },
+        emailRedirectTo: `${origin}`,
       },
     });
 
@@ -110,12 +119,19 @@ export async function sendSignupOTP(
       metadata.contact_name = details.contactName;
     }
 
+    // Dynamically get origin from request headers
+    const headersList = await headers();
+    const host = headersList.get('host');
+    const proto = headersList.get('x-forwarded-proto') || 'http';
+    const origin = `${proto}://${host}`;
+
     // Send OTP
     const { error } = await supabase.auth.signInWithOtp({
       email: details.email,
       options: {
         shouldCreateUser: true, // Must create user if signup
         data: metadata,
+        emailRedirectTo: `${origin}`,
       },
     });
 
