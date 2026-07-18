@@ -28,7 +28,7 @@ export default function HeroSlideshow() {
           <div
             key={src}
             className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-              isActive ? 'opacity-35' : 'opacity-0'
+              isActive ? 'opacity-70' : 'opacity-0'
             }`}
           >
             <Image
@@ -44,8 +44,8 @@ export default function HeroSlideshow() {
       })}
       
       {/* Gradients mask for high contrast readability and Apple aesthetic */}
-      <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/85 to-transparent z-10" />
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/10 via-transparent to-slate-950 z-10" />
+      <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/45 to-transparent z-10" />
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/10 via-transparent to-slate-950/65 z-10" />
     </div>
   );
 }
