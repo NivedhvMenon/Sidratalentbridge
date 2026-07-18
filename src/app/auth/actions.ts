@@ -3,33 +3,32 @@
 import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 
-// Helper to check if email already exists in any table
+// Helper to check if email already exists in any table using a secure RPC database function
 async function checkEmailExists(email: string) {
   const supabase = await createClient();
 
-  const { data: candidate } = await supabase
-    .from('candidates')
-    .select('id')
-    .eq('email', email)
-    .maybeSingle();
+  const { data, error } = await supabase.rpc('check_email_exists', {
+    email_val: email,
+  });
 
-  const { data: employer } = await supabase
-    .from('employers')
-    .select('id')
-    .eq('email', email)
-    .maybeSingle();
+  if (error) {
+    console.error('RPC check_email_exists error:', error);
+    return {
+      isCandidate: false,
+      isEmployer: false,
+      isAdmin: false,
+      exists: false,
+    };
+  }
 
-  const { data: admin } = await supabase
-    .from('admin_users')
-    .select('id')
-    .eq('email', email)
-    .maybeSingle();
+  // Parse returned json values
+  const result = typeof data === 'string' ? JSON.parse(data) : data;
 
   return {
-    isCandidate: !!candidate,
-    isEmployer: !!employer,
-    isAdmin: !!admin,
-    exists: !!candidate || !!employer || !!admin,
+    isCandidate: !!result.isCandidate,
+    isEmployer: !!result.isEmployer,
+    isAdmin: !!result.isAdmin,
+    exists: !!result.exists,
   };
 }
 
