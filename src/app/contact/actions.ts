@@ -15,7 +15,7 @@ interface ContactEmailDetails {
 
 /**
  * Server action to send a contact form email using Resend.
- * Relays message inputs to renjitsidra@gmail.com.
+ * Relays message inputs to info@sidratalentbridge.com.
  */
 export async function sendContactEmail(details: ContactEmailDetails) {
   const { name, email, subject, message } = details;
@@ -30,7 +30,7 @@ export async function sendContactEmail(details: ContactEmailDetails) {
     if (resend) {
       const response = await resend.emails.send({
         from: 'Sidra Contact <onboarding@resend.dev>',
-        to: 'renjitsidra@gmail.com',
+        to: 'info@sidratalentbridge.com',
         replyTo: email,
         subject: emailSubject,
         text: `
@@ -61,7 +61,7 @@ export async function sendContactEmail(details: ContactEmailDetails) {
     } else {
       // Mock success for development when key is missing
       console.log('MOCK EMAIL (No RESEND_API_KEY):', {
-        to: 'renjitsidra@gmail.com',
+        to: 'info@sidratalentbridge.com',
         from: 'onboarding@resend.dev',
         replyTo: email,
         subject: emailSubject,

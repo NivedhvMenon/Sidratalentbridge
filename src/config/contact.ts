@@ -3,8 +3,8 @@ export const CONTACT_DETAILS = {
     { label: "Primary Phone", value: "+91 7592833345", link: "tel:+917592833345" },
     { label: "Secondary Phone", value: "+91 9447486043", link: "tel:+919447486043" }
   ],
-  email: "renjitsidra@gmail.com",
-  emailLink: "mailto:renjitsidra@gmail.com",
+  email: "info@sidratalentbridge.com",
+  emailLink: "mailto:info@sidratalentbridge.com",
   address: "Green Land Nagar, Kalpetta, Wayanad-673121, Kerala",
   tagline: "Bridging Talent. Building Success.",
   heroHeadline: "Building Careers. Bridging Futures.",

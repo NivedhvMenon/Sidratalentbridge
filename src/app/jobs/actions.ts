@@ -160,7 +160,7 @@ export async function submitEmployerRequirement(details: EmployerRequirementDeta
     if (resend) {
       await resend.emails.send({
         from: 'Sidra Lead Alert <onboarding@resend.dev>',
-        to: 'renjitsidra@gmail.com',
+        to: 'info@sidratalentbridge.com',
         subject: `New Employer Requirement Lead: ${details.companyName}`,
         text: `
           Company Name: ${details.companyName}
@@ -203,7 +203,7 @@ async function sendApplicationEmailNotification(params: {
   experienceSummary: string;
   isGuest: boolean;
 }) {
-  const recipient = 'renjitsidra@gmail.com';
+  const recipient = 'info@sidratalentbridge.com';
   const subject = `Job Application: ${params.applicantName} - ${params.jobTitle} (${params.isGuest ? 'Guest' : 'Candidate'})`;
 
   if (resend) {
