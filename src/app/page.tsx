@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { createClient } from '@/utils/supabase/server';
 import { Briefcase, Globe, Award, ShieldCheck, ArrowRight, Users, CheckCircle } from 'lucide-react';
 import { CONTACT_DETAILS } from '@/config/contact';
+import HeroSlideshow from '@/components/HeroSlideshow';
 
 // Revalidate home page frequently to show new jobs
 export const revalidate = 60; 
@@ -30,19 +31,8 @@ export default async function Home() {
     <div className="flex flex-col min-h-screen">
       {/* 1. Hero Section - Widescreen Cover Image with Sapphire Mask */}
       <section className="relative overflow-hidden bg-slate-950 py-32 sm:py-40 text-white border-b border-slate-900">
-        {/* Widescreen background cover image */}
-        <div className="absolute inset-0 z-0 opacity-40">
-          <Image
-            src="/talent-bridge-cover.png"
-            alt="Sidra Talent Bridge Network Background"
-            fill
-            priority
-            className="object-cover"
-          />
-          {/* Gradients mask for high contrast readability and Apple aesthetic */}
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/10 via-transparent to-slate-950" />
-        </div>
+        {/* Widescreen background rotating cover images */}
+        <HeroSlideshow />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-3xl space-y-6 text-center sm:text-left">
