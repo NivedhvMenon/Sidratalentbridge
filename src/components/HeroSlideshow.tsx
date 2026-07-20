@@ -5,9 +5,9 @@ import Image from 'next/image';
 
 export default function HeroSlideshow() {
   const images = [
-    '/hero-1.jpg',
-    '/hero-2.jpg',
-    '/hero-3.jpg'
+    '/hero-1.png',
+    '/hero-2.png',
+    '/hero-3.png'
   ];
 
   const [activeIndex, setActiveIndex] = useState(0);
