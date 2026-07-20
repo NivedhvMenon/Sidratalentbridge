@@ -5,7 +5,9 @@ export const CONTACT_DETAILS = {
   ],
   email: "info@sidratalentbridge.com",
   emailLink: "mailto:info@sidratalentbridge.com",
-  address: "Green Land Nagar, Kalpetta, Wayanad-673121, Kerala",
+  companyName: "SIDRA TECH SOLUTIONS",
+  address: "KOTTARAM TOWERS, 12/428-4, MAIN ROAD KALPETTA, KERALA-673121",
+  gstin: "32AMUPV6605Q1Z2",
   tagline: "Bridging Talent. Building Success.",
   heroHeadline: "Building Careers. Bridging Futures.",
   whatsappNumber: "+917592833345", // Use primary phone for WhatsApp

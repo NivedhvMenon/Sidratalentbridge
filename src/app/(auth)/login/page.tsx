@@ -64,9 +64,9 @@ function LoginForm() {
     <div className="w-full max-w-md bg-white/80 backdrop-blur-md rounded-2xl border border-slate-200/60 shadow-2xl p-8 relative">
       {/* Logo/Brand Header */}
       <div className="flex flex-col items-center mb-8">
-        <div className="relative w-28 h-20 mb-2">
+        <div className="relative w-44 h-32 mb-2">
           <Image
-            src="/logo.jpg"
+            src="/logo.png"
             alt="Sidra Talent Bridge Logo"
             fill
             className="object-contain"

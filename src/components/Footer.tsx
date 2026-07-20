@@ -14,16 +14,16 @@ export default function Footer() {
           
           {/* Brand Info */}
           <div className="space-y-4">
-            <Link href="/" className="flex items-center gap-3">
-              <div className="relative w-12 h-12 overflow-hidden rounded-lg bg-white p-0.5">
+            <Link href="/" className="flex items-center gap-3.5 group">
+              <div className="relative w-18 h-18 overflow-hidden rounded-xl bg-white p-1 shadow-sm shrink-0">
                 <Image
-                  src="/logo.jpg"
+                  src="/logo.png"
                   alt="Sidra Talent Bridge Logo"
                   fill
                   className="object-contain"
                 />
               </div>
-              <span className="font-bold text-white text-lg tracking-tight">
+              <span className="font-bold text-white text-lg tracking-tight group-hover:text-blue-500 transition-colors">
                 Sidra Talent Bridge
               </span>
             </Link>
@@ -108,8 +108,12 @@ export default function Footer() {
             <h4 className="text-white font-bold text-sm uppercase tracking-wider">Contact Info</h4>
             <ul className="space-y-3.5 text-sm">
               <li className="flex items-start gap-3">
-                <MapPin className="text-blue-500 shrink-0 mt-0.5" size={16} />
-                <span>{CONTACT_DETAILS.address}</span>
+                <MapPin className="text-blue-500 shrink-0 mt-1" size={16} />
+                <div className="flex flex-col gap-0.5 text-slate-400">
+                  <span className="font-bold text-white text-xs">{CONTACT_DETAILS.companyName}</span>
+                  <span className="leading-relaxed text-xs">{CONTACT_DETAILS.address}</span>
+                  <span className="text-[10px] text-slate-500 font-semibold tracking-wide uppercase mt-0.5">GSTIN: {CONTACT_DETAILS.gstin}</span>
+                </div>
               </li>
               <li className="flex flex-col gap-1">
                 {CONTACT_DETAILS.phones.map((phone, idx) => (

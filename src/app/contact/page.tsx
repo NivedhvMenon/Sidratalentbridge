@@ -113,10 +113,12 @@ export default function ContactPage() {
                     <MapPin size={18} />
                   </div>
                   <div>
-                    <h3 className="font-bold text-slate-900 text-sm mb-1">Office Address</h3>
-                    <p className="text-slate-600 text-sm leading-relaxed">
-                      {CONTACT_DETAILS.address}
-                    </p>
+                    <h3 className="font-bold text-slate-900 text-sm mb-1.5">Office Address</h3>
+                    <div className="text-slate-600 text-sm leading-relaxed flex flex-col gap-0.5">
+                      <span className="font-bold text-slate-800 text-xs">{CONTACT_DETAILS.companyName}</span>
+                      <span>{CONTACT_DETAILS.address}</span>
+                      <span className="text-xs text-slate-400 font-semibold mt-1 uppercase tracking-wide">GSTIN: {CONTACT_DETAILS.gstin}</span>
+                    </div>
                   </div>
                 </div>
               </div>
