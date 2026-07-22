@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -43,6 +44,21 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        {/* Google Analytics Tag */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-BHZS65027M"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-BHZS65027M');
+          `}
+        </Script>
+      </head>
       <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 font-sans">
         <Navbar />
         <main className="flex-1 flex flex-col">

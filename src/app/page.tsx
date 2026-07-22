@@ -30,7 +30,7 @@ export default async function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* 1. Hero Section - Widescreen Cover Image with Sapphire Mask */}
-      <section className="relative overflow-hidden bg-slate-950 py-32 sm:py-40 text-white border-b border-slate-900">
+      <section className="relative overflow-hidden bg-slate-950 pt-52 pb-32 sm:pt-60 sm:pb-40 text-white border-b border-slate-900 -mt-20">
         {/* Widescreen background rotating cover images */}
         <HeroSlideshow />
         
