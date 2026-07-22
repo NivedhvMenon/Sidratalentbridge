@@ -140,7 +140,7 @@ export default function Footer() {
 
         {/* Divider and Copyright */}
         <div className="border-t border-slate-800 mt-16 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
-          <p>&copy; {currentYear} Sidra Talent Bridge. All rights reserved.</p>
+          <p>&copy; {currentYear} Sidra Talent Bridge | A Division of Sidra Tech Solutions. All rights reserved.</p>
           <div className="flex items-center gap-6">
             <Link href="/login" className="flex items-center gap-1 hover:text-white transition-colors text-slate-500">
               <Shield size={12} />

@@ -35,7 +35,7 @@ export default function NavbarClient({ user, role }: NavbarClientProps) {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/75 backdrop-blur-xl border-b border-slate-100/50 shadow-sm transition-all duration-300">
+    <header className="sticky top-0 z-50 w-full bg-white/20 backdrop-blur-2xl border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.03)] transition-all duration-300 after:absolute after:inset-x-0 after:bottom-0 after:h-[1px] after:bg-gradient-to-r after:from-transparent after:via-blue-500/15 after:to-transparent">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo and Brand Title */}
