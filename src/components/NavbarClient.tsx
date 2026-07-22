@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -14,6 +14,24 @@ interface NavbarClientProps {
 export default function NavbarClient({ user, role }: NavbarClientProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Check immediately on mount
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const isTransparent = pathname === '/' && !isScrolled;
 
   const navLinks = [
     { label: 'Home', href: '/' },
@@ -35,7 +53,11 @@ export default function NavbarClient({ user, role }: NavbarClientProps) {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/20 backdrop-blur-2xl border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.03)] transition-all duration-300 after:absolute after:inset-x-0 after:bottom-0 after:h-[1px] after:bg-gradient-to-r after:from-transparent after:via-blue-500/15 after:to-transparent">
+    <header className={`sticky top-0 z-50 w-full transition-all duration-300 border-b ${
+      isTransparent
+        ? 'bg-transparent border-white/5 shadow-none'
+        : 'bg-white/70 backdrop-blur-2xl border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.03)] after:absolute after:inset-x-0 after:bottom-0 after:h-[1px] after:bg-gradient-to-r after:from-transparent after:via-blue-500/15 after:to-transparent'
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo and Brand Title */}
@@ -49,10 +71,14 @@ export default function NavbarClient({ user, role }: NavbarClientProps) {
               />
             </div>
             <div className="flex flex-col">
-              <span className="font-bold text-slate-800 text-[15px] tracking-tight group-hover:text-blue-600 transition-colors">
+              <span className={`font-bold text-[15px] tracking-tight transition-colors ${
+                isTransparent ? 'text-white group-hover:text-blue-400' : 'text-slate-800 group-hover:text-blue-600'
+              }`}>
                 Sidra Talent Bridge
               </span>
-              <span className="text-[8px] text-slate-400 font-bold tracking-widest uppercase">
+              <span className={`text-[8px] font-bold tracking-widest uppercase transition-colors ${
+                isTransparent ? 'text-blue-300/80' : 'text-slate-400'
+              }`}>
                 Bridging Talent. Building Success.
               </span>
             </div>
@@ -60,19 +86,26 @@ export default function NavbarClient({ user, role }: NavbarClientProps) {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1 group/nav">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-300 group-hover/nav:opacity-60 hover:!opacity-100 ${
-                  isActive(link.href)
-                    ? 'text-blue-600 font-semibold'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const active = isActive(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-300 ${
+                    isTransparent
+                      ? active
+                        ? 'text-white bg-white/15 shadow-sm font-semibold'
+                        : 'text-slate-200 hover:text-white hover:bg-white/10 group-hover/nav:opacity-75 hover:!opacity-100'
+                      : active
+                        ? 'text-blue-600 font-semibold bg-blue-50/50'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50/80 group-hover/nav:opacity-75 hover:!opacity-100'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Desktop Auth Call-to-action */}
@@ -88,7 +121,11 @@ export default function NavbarClient({ user, role }: NavbarClientProps) {
             ) : (
               <Link
                 href="/login"
-                className="bg-slate-900 hover:bg-slate-800 active:scale-95 text-white px-4 py-2 rounded-lg text-xs font-semibold shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-1.5 transform hover:-translate-y-0.5 cursor-pointer"
+                className={`px-4 py-2 rounded-lg text-xs font-semibold shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-1.5 transform hover:-translate-y-0.5 cursor-pointer active:scale-95 ${
+                  isTransparent
+                    ? 'bg-white hover:bg-slate-100 text-slate-950'
+                    : 'bg-slate-900 hover:bg-slate-800 text-white'
+                }`}
               >
                 <LogIn size={14} />
                 Login / Register
@@ -100,7 +137,11 @@ export default function NavbarClient({ user, role }: NavbarClientProps) {
           <div className="md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors"
+              className={`p-2.5 rounded-xl transition-all ${
+                isTransparent
+                  ? 'text-white hover:bg-white/10'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              }`}
               aria-label="Toggle navigation menu"
             >
               {isOpen ? <X size={20} /> : <Menu size={20} />}
@@ -111,25 +152,36 @@ export default function NavbarClient({ user, role }: NavbarClientProps) {
 
       {/* Mobile Menu Panel */}
       {isOpen && (
-        <div className="md:hidden border-t border-slate-100 bg-white/95 backdrop-blur-md px-4 py-4 space-y-3 shadow-inner">
+        <div className={`md:hidden border-t px-4 py-4 space-y-3 shadow-inner ${
+          isTransparent
+            ? 'bg-slate-950/95 border-white/5 text-white'
+            : 'bg-white/95 border-slate-100 text-slate-800'
+        }`}>
           <nav className="flex flex-col gap-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setIsOpen(false)}
-                className={`px-4 py-3 rounded-xl text-base font-semibold transition-colors ${
-                  isActive(link.href)
-                    ? 'text-blue-600 bg-blue-50/50'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                }`}
-              >
-                {navLinks.find(l => l.href === link.href)?.label}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const active = isActive(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setIsOpen(false)}
+                  className={`px-4 py-3 rounded-xl text-base font-semibold transition-colors ${
+                    active
+                      ? isTransparent
+                        ? 'text-white bg-white/10'
+                        : 'text-blue-600 bg-blue-50/50'
+                      : isTransparent
+                        ? 'text-slate-300 hover:text-white hover:bg-white/5'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </nav>
 
-          <div className="pt-4 border-t border-slate-100 flex flex-col gap-3">
+          <div className={`pt-4 border-t flex flex-col gap-3 ${isTransparent ? 'border-white/5' : 'border-slate-100'}`}>
             {user ? (
               <Link
                 href={getDashboardLink()}
@@ -143,7 +195,11 @@ export default function NavbarClient({ user, role }: NavbarClientProps) {
               <Link
                 href="/login"
                 onClick={() => setIsOpen(false)}
-                className="w-full bg-gradient-to-r from-slate-900 to-slate-800 hover:from-slate-800 hover:to-slate-700 text-white text-center py-3 rounded-xl text-base font-bold flex items-center justify-center gap-2"
+                className={`w-full text-center py-3 rounded-xl text-base font-bold flex items-center justify-center gap-2 ${
+                  isTransparent
+                    ? 'bg-white hover:bg-slate-100 text-slate-950'
+                    : 'bg-gradient-to-r from-slate-900 to-slate-800 hover:from-slate-800 hover:to-slate-700 text-white'
+                }`}
               >
                 <LogIn size={18} />
                 Login / Register
