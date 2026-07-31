@@ -204,3 +204,124 @@ export async function logOut() {
   revalidatePath('/', 'layout');
   return { success: true };
 }
+
+/**
+ * Authenticates user using email and password.
+ * Performs role checks to ensure dashboard isolation.
+ */
+export async function loginWithPassword(formData: {
+  email: string;
+  password: string;
+  role: 'candidate' | 'employer' | 'admin';
+}) {
+  const { email, password, role } = formData;
+  const supabase = await createClient();
+
+  try {
+    const check = await checkEmailExists(email);
+
+    if (role === 'candidate' && !check.isCandidate) {
+      return { error: 'No candidate profile found. Please sign up first.' };
+    }
+    if (role === 'employer' && !check.isEmployer) {
+      return { error: 'No employer profile found. Please sign up first.' };
+    }
+    if (role === 'admin' && !check.isAdmin) {
+      return { error: 'Access denied. You are not registered as an administrator.' };
+    }
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      return { error: error.message };
+    }
+
+    if (!data.user) {
+      return { error: 'Authentication failed. Please verify your credentials.' };
+    }
+
+    revalidatePath('/', 'layout');
+
+    let redirectUrl = '/dashboard/candidate';
+    if (role === 'employer') redirectUrl = '/dashboard/employer';
+    if (role === 'admin') redirectUrl = '/admin';
+
+    return { success: true, redirectUrl };
+  } catch (err: any) {
+    return { error: err.message || 'Login failed.' };
+  }
+}
+
+/**
+ * Registers a new user with email and password.
+ * Saves candidate/employer specific metadata inside auth metadata.
+ */
+export async function signUpWithPassword(
+  role: 'candidate' | 'employer',
+  details: {
+    email: string;
+    password: string;
+    phone?: string;
+    fullName?: string; // Candidate only
+    companyName?: string; // Employer only
+    contactName?: string; // Employer only
+  }
+) {
+  const { email, password, phone, fullName, companyName, contactName } = details;
+  const supabase = await createClient();
+
+  try {
+    const check = await checkEmailExists(email);
+    if (check.exists) {
+      return { error: 'This email is already registered. Please login instead.' };
+    }
+
+    const metadata: any = {
+      role,
+      phone,
+    };
+
+    if (role === 'candidate') {
+      metadata.full_name = fullName;
+    } else {
+      metadata.company_name = companyName;
+      metadata.contact_name = contactName;
+    }
+
+    const headersList = await headers();
+    const host = headersList.get('host');
+    const proto = headersList.get('x-forwarded-proto') || 'http';
+    const origin = `${proto}://${host}`;
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: metadata,
+        emailRedirectTo: `${origin}/auth/callback`,
+      },
+    });
+
+    if (error) {
+      return { error: error.message };
+    }
+
+    // Check if session was created instantly (e.g. Email Confirmation is disabled)
+    if (data.session) {
+      let redirectUrl = '/dashboard/candidate';
+      if (role === 'employer') redirectUrl = '/dashboard/employer';
+      return { success: true, sessionActive: true, redirectUrl };
+    }
+
+    return {
+      success: true,
+      sessionActive: false,
+      message: 'Account registered successfully! Please check your email to confirm registration.',
+    };
+  } catch (err: any) {
+    return { error: err.message || 'An error occurred during signup.' };
+  }
+}
