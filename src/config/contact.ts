@@ -12,8 +12,8 @@ export const CONTACT_DETAILS = {
   heroHeadline: "Building Careers. Bridging Futures.",
   whatsappNumber: "+917592833345", // Use primary phone for WhatsApp
   socials: {
-    linkedin: "https://www.linkedin.com/company/sidra-talent-bridge",
-    facebook: "https://www.facebook.com/sidratalentbridge",
+    linkedin: "https://www.linkedin.com/in/sidra-india-206345425",
+    facebook: "https://www.facebook.com/profile.php?id=61592566223552",
     instagram: "https://www.instagram.com/sidratalentbridge"
   }
 };
