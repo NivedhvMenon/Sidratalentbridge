@@ -36,27 +36,24 @@ async function checkEmailExists(email: string) {
 
 /**
  * Sends OTP to user's email for login.
- * Verifies that the email exists for the selected role first.
+ * Automatically detects whether the user is a Candidate, Employer, or Admin.
  */
 export async function sendLoginOTP(formData: {
   email: string;
-  role: 'candidate' | 'employer' | 'admin';
 }) {
-  const { email, role } = formData;
+  const { email } = formData;
   const supabase = await createClient();
 
   try {
     const check = await checkEmailExists(email);
 
-    if (role === 'candidate' && !check.isCandidate) {
-      return { error: 'No candidate profile found. Please sign up first.' };
+    if (!check.exists) {
+      return { error: 'No account found with this email. Please sign up first.' };
     }
-    if (role === 'employer' && !check.isEmployer) {
-      return { error: 'No employer profile found. Please sign up first.' };
-    }
-    if (role === 'admin' && !check.isAdmin) {
-      return { error: 'Access denied. You are not registered as an administrator.' };
-    }
+
+    let detectedRole = 'candidate';
+    if (check.isAdmin) detectedRole = 'admin';
+    else if (check.isEmployer) detectedRole = 'employer';
 
     // Dynamically get origin from request headers to redirect back to local or production site
     const headersList = await headers();
@@ -68,8 +65,8 @@ export async function sendLoginOTP(formData: {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        shouldCreateUser: false, // Do not create user if not exists during login
-        data: { role },
+        shouldCreateUser: false,
+        data: { role: detectedRole },
         emailRedirectTo: `${origin}/auth/callback`,
       },
     });
@@ -146,14 +143,13 @@ export async function sendSignupOTP(
 }
 
 /**
- * Verifies OTP code and logs the user in.
+ * Verifies OTP code and logs the user in, auto-routing to their respective dashboard.
  */
 export async function verifyOTP(formData: {
   email: string;
   token: string;
-  role: 'candidate' | 'employer' | 'admin';
 }) {
-  const { email, token, role } = formData;
+  const { email, token } = formData;
   const supabase = await createClient();
 
   try {
@@ -171,12 +167,17 @@ export async function verifyOTP(formData: {
       return { error: 'Authentication failed. Please request a new code.' };
     }
 
-    // Ensure session metadata matches the role they used to log in
-    const userRole = data.user.user_metadata?.role;
-    if (userRole !== role) {
-      // In case they signed up as candidate but logged in as employer,
-      // this check prevents session hijacks, though sendLoginOTP already blocks this.
-      return { error: `Unauthorized. This account is registered as a ${userRole}.` };
+    // Auto-detect role from user metadata or database tables
+    let role = data.user.user_metadata?.role;
+    if (!role) {
+      const check = await checkEmailExists(email);
+      if (check.isAdmin) role = 'admin';
+      else if (check.isEmployer) role = 'employer';
+      else if (check.isCandidate) role = 'candidate';
+
+      if (role) {
+        await supabase.auth.updateUser({ data: { role } });
+      }
     }
 
     revalidatePath('/', 'layout');
@@ -206,30 +207,16 @@ export async function logOut() {
 }
 
 /**
- * Authenticates user using email and password.
- * Performs role checks to ensure dashboard isolation.
+ * Authenticates user using email and password, auto-detecting their role and routing to their dashboard.
  */
 export async function loginWithPassword(formData: {
   email: string;
   password: string;
-  role: 'candidate' | 'employer' | 'admin';
 }) {
-  const { email, password, role } = formData;
+  const { email, password } = formData;
   const supabase = await createClient();
 
   try {
-    const check = await checkEmailExists(email);
-
-    if (role === 'candidate' && !check.isCandidate) {
-      return { error: 'No candidate profile found. Please sign up first.' };
-    }
-    if (role === 'employer' && !check.isEmployer) {
-      return { error: 'No employer profile found. Please sign up first.' };
-    }
-    if (role === 'admin' && !check.isAdmin) {
-      return { error: 'Access denied. You are not registered as an administrator.' };
-    }
-
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -241,6 +228,20 @@ export async function loginWithPassword(formData: {
 
     if (!data.user) {
       return { error: 'Authentication failed. Please verify your credentials.' };
+    }
+
+    // Auto-detect role from user metadata or database tables
+    let role = data.user.user_metadata?.role;
+
+    if (!role) {
+      const check = await checkEmailExists(email);
+      if (check.isAdmin) role = 'admin';
+      else if (check.isEmployer) role = 'employer';
+      else if (check.isCandidate) role = 'candidate';
+
+      if (role) {
+        await supabase.auth.updateUser({ data: { role } });
+      }
     }
 
     revalidatePath('/', 'layout');

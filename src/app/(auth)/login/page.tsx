@@ -12,7 +12,6 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const redirectedFrom = searchParams.get('redirectedFrom') || '';
 
-  const [role, setRole] = useState<'candidate' | 'employer' | 'admin'>('candidate');
   const [loginMethod, setLoginMethod] = useState<'password' | 'otp'>('password');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -27,12 +26,12 @@ function LoginForm() {
     setMessage(null);
 
     if (!email || !password) {
-      setMessage({ type: 'error', text: 'Please fill in all fields.' });
+      setMessage({ type: 'error', text: 'Please enter both your email and password.' });
       return;
     }
 
     startTransition(async () => {
-      const res = await loginWithPassword({ email, password, role });
+      const res = await loginWithPassword({ email, password });
       if (res.error) {
         setMessage({ type: 'error', text: res.error });
       } else if (res.success && res.redirectUrl) {
@@ -52,7 +51,7 @@ function LoginForm() {
     }
 
     startTransition(async () => {
-      const res = await sendLoginOTP({ email, role });
+      const res = await sendLoginOTP({ email });
       if (res.error) {
         setMessage({ type: 'error', text: res.error });
       } else {
@@ -72,7 +71,7 @@ function LoginForm() {
     }
 
     startTransition(async () => {
-      const res = await verifyOTP({ email, token: otp, role });
+      const res = await verifyOTP({ email, token: otp });
       if (res.error) {
         setMessage({ type: 'error', text: res.error });
       } else if (res.success && res.redirectUrl) {
@@ -95,7 +94,7 @@ function LoginForm() {
             priority
           />
         </div>
-        <h1 className="text-xl font-bold text-slate-800 tracking-tight">Sidra Talent Bridge</h1>
+        <h1 className="text-xl font-bold text-slate-800 tracking-tight">Sign In to Sidra Talent Bridge</h1>
         <p className="text-xs text-slate-500 font-medium tracking-wide uppercase mt-1">
           Bridging Talent. Building Success.
         </p>
@@ -114,66 +113,17 @@ function LoginForm() {
         </div>
       )}
 
-      {/* Role Tabs */}
-      <div className="flex bg-slate-100/80 p-1 rounded-xl mb-4 border border-slate-200/40">
-        <button
-          type="button"
-          onClick={() => {
-            setRole('candidate');
-            setMessage(null);
-          }}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all duration-300 ${
-            role === 'candidate'
-              ? 'bg-white text-blue-600 shadow-sm'
-              : 'text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          <User size={14} />
-          Candidate
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setRole('employer');
-            setMessage(null);
-          }}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all duration-300 ${
-            role === 'employer'
-              ? 'bg-white text-blue-600 shadow-sm'
-              : 'text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          <Building2 size={14} />
-          Employer
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setRole('admin');
-            setMessage(null);
-          }}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-all duration-300 ${
-            role === 'admin'
-              ? 'bg-white text-blue-600 shadow-sm'
-              : 'text-slate-500 hover:text-slate-800'
-          }`}
-        >
-          <ShieldCheck size={14} />
-          Admin
-        </button>
-      </div>
-
       {/* Login Method Toggle */}
-      <div className="flex bg-slate-100/40 p-1 rounded-xl mb-6 border border-slate-200/20">
+      <div className="flex bg-slate-100/60 p-1 rounded-xl mb-6 border border-slate-200/40">
         <button
           type="button"
           onClick={() => {
             setLoginMethod('password');
             setMessage(null);
           }}
-          className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all duration-300 ${
+          className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all duration-300 ${
             loginMethod === 'password'
-              ? 'bg-white text-slate-800 shadow-sm border border-slate-200/30'
+              ? 'bg-white text-slate-900 shadow-sm border border-slate-200/50'
               : 'text-slate-500 hover:text-slate-800'
           }`}
         >
@@ -185,9 +135,9 @@ function LoginForm() {
             setLoginMethod('otp');
             setMessage(null);
           }}
-          className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all duration-300 ${
+          className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all duration-300 ${
             loginMethod === 'otp'
-              ? 'bg-white text-slate-800 shadow-sm border border-slate-200/30'
+              ? 'bg-white text-slate-900 shadow-sm border border-slate-200/50'
               : 'text-slate-500 hover:text-slate-800'
           }`}
         >
@@ -241,13 +191,13 @@ function LoginForm() {
           <button
             type="submit"
             disabled={isPending}
-            className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-blue-500/35 transition-all duration-300 flex items-center justify-center gap-2 group cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
+            className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-blue-500/35 transition-all duration-300 flex items-center justify-center gap-2 group cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed mt-2"
           >
             {isPending ? (
               <RefreshCw size={18} className="animate-spin" />
             ) : (
               <>
-                Log In
+                Sign In
                 <ArrowRight size={18} className="group-hover:translate-x-0.5 transition-transform" />
               </>
             )}
@@ -283,7 +233,7 @@ function LoginForm() {
               <button
                 type="submit"
                 disabled={isPending}
-                className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-blue-500/35 transition-all duration-300 flex items-center justify-center gap-2 group cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
+                className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-blue-500/35 transition-all duration-300 flex items-center justify-center gap-2 group cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed mt-2"
               >
                 {isPending ? (
                   <RefreshCw size={18} className="animate-spin" />
@@ -345,7 +295,7 @@ function LoginForm() {
                   {isPending ? (
                     <RefreshCw size={18} className="animate-spin" />
                   ) : (
-                    'Verify & Log In'
+                    'Verify & Sign In'
                   )}
                 </button>
               </form>
@@ -366,29 +316,20 @@ function LoginForm() {
         </div>
       )}
 
-      {/* Signup Footer Navigation Links */}
-      <div className="mt-8 text-center text-sm text-slate-500">
-        {role === 'candidate' && (
-          <p>
-            New here?{' '}
-            <Link href="/signup/candidate" className="font-semibold text-blue-600 hover:underline">
-              Create a candidate account
-            </Link>
-          </p>
-        )}
-        {role === 'employer' && (
-          <p>
-            Looking to hire?{' '}
-            <Link href="/signup/employer" className="font-semibold text-blue-600 hover:underline">
-              Register your company
-            </Link>
-          </p>
-        )}
-        {role === 'admin' && (
-          <p className="text-xs">
-            Admin authorization is restricted to registered system administrators.
-          </p>
-        )}
+      {/* Unified Signup Footer Links */}
+      <div className="mt-8 pt-6 border-t border-slate-200/60 text-center text-sm text-slate-500 space-y-2">
+        <p>
+          New Candidate?{' '}
+          <Link href="/signup/candidate" className="font-semibold text-blue-600 hover:underline">
+            Create an account
+          </Link>
+        </p>
+        <p>
+          Looking to hire?{' '}
+          <Link href="/signup/employer" className="font-semibold text-blue-600 hover:underline">
+            Register your company
+          </Link>
+        </p>
       </div>
     </div>
   );
