@@ -6,8 +6,9 @@ import { Briefcase, Globe, Award, ShieldCheck, ArrowRight, Users, CheckCircle } 
 import { CONTACT_DETAILS } from '@/config/contact';
 import HeroSlideshow from '@/components/HeroSlideshow';
 
-// Revalidate home page frequently to show new jobs
-export const revalidate = 60; 
+// Live dynamic rendering for immediate job updates
+export const dynamic = 'force-dynamic';
+export const revalidate = 0; 
 
 export default async function Home() {
   const supabase = await createClient();
@@ -174,7 +175,7 @@ export default async function Home() {
                       {job.title}
                     </h3>
                     <p className="text-xs text-slate-500 font-semibold mb-4">
-                      {job.employers?.company_name || 'Sidra Client'} &bull; {job.location}
+                      {job.company_name || job.employers?.company_name || 'Sidra Client'} &bull; {job.location}
                     </p>
                     
                     <p className="text-sm text-slate-600 line-clamp-2 mb-6">

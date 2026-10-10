@@ -4,6 +4,9 @@ import { createClient } from '@/utils/supabase/server';
 import JobFilters from './JobFilters';
 import { Briefcase, MapPin, Globe, ArrowRight, Calendar } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface PageProps {
   searchParams: Promise<{
     q?: string;
@@ -153,7 +156,7 @@ export default async function JobsPage({ searchParams }: PageProps) {
                           {job.title}
                         </h2>
                         <p className="text-xs font-semibold text-slate-500 mt-1 flex items-center gap-1.5">
-                          <span>{job.employers?.company_name || 'Sidra Client'}</span>
+                          <span>{job.company_name || job.employers?.company_name || 'Sidra Client'}</span>
                           <span>&bull;</span>
                           <span className="flex items-center gap-1">
                             <MapPin size={12} className="text-slate-400" />

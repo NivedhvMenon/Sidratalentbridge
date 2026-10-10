@@ -44,6 +44,7 @@ export default async function ApplicationsPage() {
         title,
         location,
         category,
+        company_name,
         employers (
           company_name
         )
@@ -139,7 +140,7 @@ export default async function ApplicationsPage() {
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden divide-y divide-slate-100">
           {applications.map((app) => {
             const jobTitle = app.jobs?.title || 'Unknown Job';
-            const companyName = app.jobs?.employers?.company_name || 'Sidra Client';
+            const companyName = (app.jobs as any)?.company_name || app.jobs?.employers?.company_name || 'Sidra Client';
             const location = app.jobs?.location || 'Unknown Location';
             const category = app.jobs?.category || 'General';
 

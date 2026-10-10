@@ -5,6 +5,9 @@ import JobApplicationForm from './JobApplicationForm';
 import { Briefcase, MapPin, Globe, Calendar, ArrowLeft, ArrowUpRight, MessageCircle } from 'lucide-react';
 import { CONTACT_DETAILS } from '@/config/contact';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // Generate dynamic title/description tags for SEO
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -132,7 +135,7 @@ export default async function JobDetailPage({ params }: PageProps) {
                     {job.title}
                   </h1>
                   <p className="text-sm font-semibold text-slate-500 mt-2">
-                    {job.employers?.company_name || 'Sidra Client'} &bull; {job.location}
+                    {job.company_name || job.employers?.company_name || 'Sidra Client'} &bull; {job.location}
                   </p>
                 </div>
 
